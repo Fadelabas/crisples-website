@@ -18,7 +18,7 @@ A premium, responsive storefront for Crisples dried apple crisps. The site combi
 - Modern CSS
 - Vanilla JavaScript ES modules
 - Node.js production build script
-- Vercel static hosting
+- GitHub Pages and GitHub Actions
 
 ## Local installation
 
@@ -66,8 +66,8 @@ crisples-website/
 ├── about.html
 ├── contact.html
 ├── cart.html
-├── package.json
-└── vercel.json
+├── .github/workflows/deploy-pages.yml
+└── package.json
 ```
 
 ## Configuration
@@ -88,5 +88,4 @@ Edit `assets/js/products.js` to update product copy, images, benefits, or price.
 
 ## Deployment
 
-The included `vercel.json` builds the project with `npm run build`, publishes `dist/`, enables clean page URLs, and applies production caching and security headers. Connecting the repository to Vercel enables automatic deployments after future pushes to the production branch.
-
+GitHub Actions runs `npm run build` and deploys `dist/` to GitHub Pages after every push to `main`. The workflow can also be started manually from the repository's Actions tab.

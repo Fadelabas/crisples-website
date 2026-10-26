@@ -5,7 +5,7 @@ import process from 'node:process';
 const root = process.cwd();
 const dist = path.join(root, 'dist');
 const pages = ['index.html', 'shop.html', 'product.html', 'about.html', 'contact.html', 'cart.html'];
-const publicFiles = [...pages, 'robots.txt', 'site.webmanifest', '.htaccess'];
+const publicFiles = [...pages, 'robots.txt', 'site.webmanifest', '.htaccess', '.nojekyll'];
 const sourceFiles = [
   ...pages,
   'site.webmanifest',
