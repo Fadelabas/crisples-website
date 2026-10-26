@@ -89,3 +89,5 @@ Edit `assets/js/products.js` to update product copy, images, benefits, or price.
 ## Deployment
 
 GitHub Actions runs `npm run build` and deploys `dist/` to GitHub Pages after every push to `main`. The workflow can also be started manually from the repository's Actions tab.
+
+To run the browser QA suite against a deployed environment, set `QA_BASE_URL` before running `node scripts/qa-browser.mjs`.

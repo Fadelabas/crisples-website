@@ -8,7 +8,7 @@ const qaDir = path.join(root, '.visual-qa');
 const profileDir = path.join(qaDir, 'chrome-profile');
 const chromePath = 'C:\\Program Files\\Google\\Chrome\\Application\\chrome.exe';
 const port = 9227;
-const base = 'http://127.0.0.1:8123';
+const base = (process.env.QA_BASE_URL || 'http://127.0.0.1:8123').replace(/\/$/, '');
 
 await mkdir(qaDir, { recursive: true });
 await rm(profileDir, { recursive: true, force: true });
