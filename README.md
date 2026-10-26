@@ -2,6 +2,8 @@
 
 A premium, responsive storefront for Crisples dried apple crisps. The site combines campaign-led product storytelling with a lightweight shopping cart and a WhatsApp checkout handoff.
 
+Live site: https://fadelabas.github.io/crisples-website/
+
 ## Main features
 
 - Responsive Home, Shop, Product, About, Contact, and Cart pages
@@ -25,7 +27,7 @@ A premium, responsive storefront for Crisples dried apple crisps. The site combi
 Requirements: Node.js 18+ and PHP for the included local server command.
 
 ```bash
-git clone <repository-url>
+git clone https://github.com/Fadelabas/crisples-website.git
 cd crisples-website
 npm run serve
 ```
