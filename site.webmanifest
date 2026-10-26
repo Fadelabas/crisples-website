@@ -1,0 +1,17 @@
+{
+  "name": "Crisples",
+  "short_name": "Crisples",
+  "description": "Apple. Just crunchier.",
+  "start_url": "./index.html",
+  "display": "standalone",
+  "background_color": "#fcfbf7",
+  "theme_color": "#0b4a31",
+  "icons": [
+    {
+      "src": "generated/transparent/crisples-package-green.png",
+      "sizes": "1052x1472",
+      "type": "image/png",
+      "purpose": "any"
+    }
+  ]
+}
