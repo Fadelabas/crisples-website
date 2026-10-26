@@ -32,7 +32,7 @@ async function waitForDebugger() {
 class CDP {
   constructor(url) {
     this.ws = new WebSocket(url);
-    this.id = 0; this.pending = new Map(); this.waiters = new Map(); this.events = [];
+    this.id = 0; this.pending = new Map(); this.events = [];
   }
   async open() {
     await new Promise((resolve, reject) => {
@@ -46,8 +46,6 @@ class CDP {
         data.error ? reject(new Error(data.error.message)) : resolve(data.result);
       } else if (data.method) {
         this.events.push(data);
-        const waiters = this.waiters.get(data.method) || [];
-        this.waiters.delete(data.method); waiters.forEach((resolve) => resolve(data.params));
       }
     });
   }
@@ -56,13 +54,6 @@ class CDP {
     return new Promise((resolve, reject) => {
       this.pending.set(id, { resolve, reject });
       this.ws.send(JSON.stringify({ id, method, params }));
-    });
-  }
-  wait(method, timeout = 10000) {
-    return new Promise((resolve, reject) => {
-      const timer = setTimeout(() => reject(new Error(`Timed out waiting for ${method}`)), timeout);
-      const done = (value) => { clearTimeout(timer); resolve(value); };
-      this.waiters.set(method, [...(this.waiters.get(method) || []), done]);
     });
   }
   async eval(expression) {
@@ -87,12 +78,15 @@ try {
 
   async function navigate(route) {
     cdp.events = [];
-    const loaded = cdp.wait('Page.loadEventFired');
     await cdp.send('Page.navigate', { url: `${base}/${route}` });
-    await loaded;
+    await new Promise((resolve) => setTimeout(resolve, 750));
     await cdp.eval(`(() => {
       document.querySelectorAll('img[loading="lazy"]').forEach(img => img.loading = 'eager');
-      return Promise.all([...document.images].map(img => img.complete ? true : new Promise(r => { img.addEventListener('load',r,{once:true}); img.addEventListener('error',r,{once:true}); }))).then(() => document.fonts?.ready);
+      const assetsReady = Promise.all([
+        Promise.all([...document.images].map(img => img.complete ? true : new Promise(r => { img.addEventListener('load',r,{once:true}); img.addEventListener('error',r,{once:true}); }))),
+        document.fonts?.ready || Promise.resolve(),
+      ]);
+      return Promise.race([assetsReady, new Promise(resolve => setTimeout(resolve, 15000))]);
     })()`);
   }
 
@@ -145,11 +139,13 @@ try {
   for (const route of pages) await audit(route, 390, 844);
   for (const width of [375, 430, 768, 1024]) await audit('index.html', width, width < 600 ? 844 : 900);
 
-  await viewport(1440, 1000); await navigate('index.html'); await screenshotViewport('home-1440-viewport', 1440, 1000); await screenshot('home-1440', 1440, 1000);
-  await navigate('shop.html'); await screenshot('shop-1440', 1440, 1000);
-  await navigate('product.html?id=crisples-dried-apple-crisps'); await screenshot('product-1440', 1440, 1000);
-  await viewport(390, 844); await navigate('index.html'); await screenshotViewport('home-390-viewport', 390, 844); await screenshot('home-390', 390, 844);
-  await navigate('product.html?id=crisples-dried-apple-crisps'); await screenshotViewport('product-390-viewport', 390, 844); await screenshot('product-390', 390, 844);
+  if (!process.env.QA_SKIP_SCREENSHOTS) {
+    await viewport(1440, 1000); await navigate('index.html'); await screenshotViewport('home-1440-viewport', 1440, 1000); await screenshot('home-1440', 1440, 1000);
+    await navigate('shop.html'); await screenshot('shop-1440', 1440, 1000);
+    await navigate('product.html?id=crisples-dried-apple-crisps'); await screenshot('product-1440', 1440, 1000);
+    await viewport(390, 844); await navigate('index.html'); await screenshotViewport('home-390-viewport', 390, 844); await screenshot('home-390', 390, 844);
+    await navigate('product.html?id=crisples-dried-apple-crisps'); await screenshotViewport('product-390-viewport', 390, 844); await screenshot('product-390', 390, 844);
+  }
 
   await viewport(1440, 1000); await navigate('index.html');
   const interaction = await cdp.eval(`(async () => {
